@@ -1,0 +1,15 @@
+[package]
+name = "divvy"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+libc = { version = "0.2.141", optional = true }
+log = "0.4.17"
+
+[features]
+default = ["std"]
+
+std = ["libc"]
