@@ -1,0 +1,10 @@
+[package]
+name = "divvy-cpp"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+divvy-core = { version = "0.1.0", path = "../divvy-core" }
+
+[build-dependencies]
+cc = "1.0"
