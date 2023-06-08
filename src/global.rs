@@ -1,5 +1,8 @@
 use alloc::alloc::{alloc, alloc_zeroed, dealloc, realloc, GlobalAlloc, Layout};
-use core::ptr::{self, NonNull};
+use core::{
+    cmp::Ordering,
+    ptr::{self, NonNull},
+};
 
 use divvy_core::{AllocError, Allocate, Deallocate, Grow, NonZeroLayout, Shrink};
 
@@ -131,9 +134,9 @@ where
             }
             (Some(old_layout), Some(new_layout)) => {
                 match old_layout.size().cmp(&new_layout.size()) {
-                    std::cmp::Ordering::Less => self.inner.grow(ptr, old_layout, new_layout),
-                    std::cmp::Ordering::Equal => return ptr.as_ptr(),
-                    std::cmp::Ordering::Greater => self.inner.shrink(ptr, old_layout, new_layout),
+                    Ordering::Less => self.inner.grow(ptr, old_layout, new_layout),
+                    Ordering::Equal => return ptr.as_ptr(),
+                    Ordering::Greater => self.inner.shrink(ptr, old_layout, new_layout),
                 }
             }
         };
