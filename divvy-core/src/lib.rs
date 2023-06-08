@@ -28,12 +28,7 @@
 #![no_std]
 #![allow(clippy::missing_safety_doc)]
 
-use core::{
-    alloc::Layout,
-    fmt::Display,
-    num::NonZeroUsize,
-    ptr::{self, NonNull},
-};
+use core::{alloc::Layout, fmt::Display, num::NonZeroUsize, ptr::NonNull};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct NonZeroLayout(Layout);
@@ -152,6 +147,32 @@ pub unsafe trait Allocate {
 
         Some(ptr)
     }
+
+    #[inline]
+    unsafe fn grow(
+        &self,
+        ptr: NonNull<u8>,
+        old_layout: NonZeroLayout,
+        new_layout: NonZeroLayout,
+    ) -> Result<NonNull<u8>, AllocError>
+    where
+        Self: Deallocate,
+    {
+        todo!()
+    }
+
+    #[inline]
+    unsafe fn grow_zeroed(
+        &self,
+        ptr: NonNull<u8>,
+        old_layout: NonZeroLayout,
+        new_layout: NonZeroLayout,
+    ) -> Result<NonNull<u8>, AllocError>
+    where
+        Self: Deallocate,
+    {
+        todo!()
+    }
 }
 
 /// The deallocation half of an allocator. This allows for deallocation of pointers
@@ -171,95 +192,6 @@ pub unsafe trait Deallocate {
     ) -> Option<NonNull<u8>> {
         _ = (ptr, old_layout, new_layout);
         None
-    }
-}
-
-pub unsafe trait Shrink: Allocate + Deallocate {
-    unsafe fn shrink(
-        &self,
-        ptr: NonNull<u8>,
-        old_layout: NonZeroLayout,
-        new_layout: NonZeroLayout,
-    ) -> Result<NonNull<u8>, AllocError> {
-        debug_assert!(
-            old_layout.size() >= new_layout.size(),
-            "`new_layout.size()` must be at least as small as `old_layout.size()`"
-        );
-
-        if let Some(ptr) = unsafe { self.try_shrink(ptr, old_layout, new_layout) } {
-            return Ok(ptr);
-        }
-
-        let new = self.allocate(new_layout)?;
-        let src = ptr.as_ptr();
-        let dst = new.as_ptr();
-        let len = new_layout.size();
-
-        unsafe {
-            ptr::copy_nonoverlapping(src, dst, len);
-            self.deallocate(ptr, old_layout);
-        }
-
-        Ok(new)
-    }
-}
-
-pub unsafe trait Grow: Allocate + Deallocate {
-    unsafe fn grow(
-        &self,
-        ptr: NonNull<u8>,
-        old_layout: NonZeroLayout,
-        new_layout: NonZeroLayout,
-    ) -> Result<NonNull<u8>, AllocError> {
-        debug_assert!(
-            old_layout.size() <= new_layout.size(),
-            "`new_layout.size()` must be at least as large as `old_layout.size()`"
-        );
-
-        if let Some(ptr) = unsafe { self.try_grow(ptr, old_layout, new_layout) } {
-            return Ok(ptr);
-        }
-
-        let new = self.allocate(new_layout)?;
-        let src = ptr.as_ptr();
-        let dst = new.as_ptr();
-        let len = old_layout.size();
-
-        unsafe {
-            ptr::copy_nonoverlapping(src, dst, len);
-            self.deallocate(ptr, old_layout);
-        }
-
-        Ok(new)
-    }
-
-    #[inline]
-    unsafe fn grow_zeroed(
-        &self,
-        ptr: NonNull<u8>,
-        old_layout: NonZeroLayout,
-        new_layout: NonZeroLayout,
-    ) -> Result<NonNull<u8>, AllocError> {
-        debug_assert!(
-            old_layout.size() <= new_layout.size(),
-            "`new_layout.size()` must be at least as large as `old_layout.size()`"
-        );
-
-        if let Some(ptr) = unsafe { self.try_grow_zeroed(ptr, old_layout, new_layout) } {
-            return Ok(ptr);
-        }
-
-        let new = self.allocate_zeroed(new_layout)?;
-        let src = ptr.as_ptr();
-        let dst = new.as_ptr();
-        let len = old_layout.size();
-
-        unsafe {
-            ptr::copy_nonoverlapping(src, dst, len);
-            self.deallocate(ptr, old_layout);
-        }
-
-        Ok(new)
     }
 }
 
@@ -296,6 +228,19 @@ where
     ) -> Option<NonNull<u8>> {
         unsafe { (**self).try_grow_zeroed(ptr, old_layout, new_layout) }
     }
+
+    #[inline]
+    unsafe fn grow(
+        &self,
+        ptr: NonNull<u8>,
+        old_layout: NonZeroLayout,
+        new_layout: NonZeroLayout,
+    ) -> Result<NonNull<u8>, AllocError>
+    where
+        Self: Deallocate,
+    {
+        unsafe { (**self).grow(ptr, old_layout, new_layout) }
+    }
 }
 
 unsafe impl<'a, A> Deallocate for &'a A
@@ -315,45 +260,5 @@ where
         new_layout: NonZeroLayout,
     ) -> Option<NonNull<u8>> {
         unsafe { (**self).try_shrink(ptr, old_layout, new_layout) }
-    }
-}
-
-unsafe impl<'a, A> Grow for &'a A
-where
-    A: Grow + ?Sized,
-{
-    #[inline]
-    unsafe fn grow(
-        &self,
-        ptr: NonNull<u8>,
-        old_layout: NonZeroLayout,
-        new_layout: NonZeroLayout,
-    ) -> Result<NonNull<u8>, AllocError> {
-        unsafe { (**self).grow(ptr, old_layout, new_layout) }
-    }
-
-    #[inline]
-    unsafe fn grow_zeroed(
-        &self,
-        ptr: NonNull<u8>,
-        old_layout: NonZeroLayout,
-        new_layout: NonZeroLayout,
-    ) -> Result<NonNull<u8>, AllocError> {
-        unsafe { (**self).grow_zeroed(ptr, old_layout, new_layout) }
-    }
-}
-
-unsafe impl<'a, A> Shrink for &'a A
-where
-    A: Shrink,
-{
-    #[inline]
-    unsafe fn shrink(
-        &self,
-        ptr: NonNull<u8>,
-        old_layout: NonZeroLayout,
-        new_layout: NonZeroLayout,
-    ) -> Result<NonNull<u8>, AllocError> {
-        unsafe { (**self).shrink(ptr, old_layout, new_layout) }
     }
 }
