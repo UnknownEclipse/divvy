@@ -7,7 +7,11 @@ extern crate alloc;
 
 pub use divvy_core::*;
 
-pub use crate::{arena::Arena, leak::Leak};
+pub use crate::{
+    arena::Arena,
+    leak::Leak,
+    slice::{Slice, SyncSlice},
+};
 
 mod arena;
 #[cfg(any(feature = "alloc", feature = "std"))]
