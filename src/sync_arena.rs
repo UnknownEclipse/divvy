@@ -1,4 +1,4 @@
-use std::{alloc::Layout, ptr::NonNull, sync::atomic::AtomicPtr};
+use core::{alloc::Layout, ptr::NonNull, sync::atomic::AtomicPtr};
 
 use divvy_core::{Deallocate, NonZeroLayout};
 

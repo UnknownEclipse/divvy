@@ -1,6 +1,6 @@
 // pub struct Arena<A> {}
 
-use std::{
+use core::{
     alloc::Layout,
     cell::{Cell, UnsafeCell},
     cmp, mem,

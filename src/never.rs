@@ -1,4 +1,4 @@
-use std::ptr::NonNull;
+use core::ptr::NonNull;
 
 use divvy_core::{AllocError, Allocate, Deallocate, Grow, NonZeroLayout, Shrink};
 
