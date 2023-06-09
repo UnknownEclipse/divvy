@@ -66,6 +66,9 @@ pub struct SyncSlice<'a> {
     zeroed: bool,
 }
 
+unsafe impl<'a> Send for SyncSlice<'a> {}
+unsafe impl<'a> Sync for SyncSlice<'a> {}
+
 impl<'a> SyncSlice<'a> {
     #[inline]
     pub const unsafe fn new_unchecked(slice: NonNull<[u8]>, zeroed: bool) -> Self {
