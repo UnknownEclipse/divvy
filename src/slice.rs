@@ -12,13 +12,13 @@ use divvy_core::{AllocError, Allocate, NonZeroLayout};
 pub struct Slice<'a> {
     slice: NonNull<[u8]>,
     pos: Cell<usize>,
-    _p: PhantomData<&'a mut [u8]>,
+    _p: PhantomData<&'a [u8]>,
     zeroed: bool,
 }
 
 impl<'a> Slice<'a> {
     #[inline]
-    pub unsafe fn new_unchecked(slice: NonNull<[u8]>, zeroed: bool) -> Self {
+    pub const unsafe fn new_unchecked(slice: NonNull<[u8]>, zeroed: bool) -> Self {
         Self {
             slice,
             pos: Cell::new(0),
@@ -62,13 +62,13 @@ unsafe impl<'a> Allocate for Slice<'a> {
 pub struct SyncSlice<'a> {
     slice: NonNull<[u8]>,
     pos: AtomicUsize,
-    _p: PhantomData<&'a mut [u8]>,
+    _p: PhantomData<&'a [u8]>,
     zeroed: bool,
 }
 
 impl<'a> SyncSlice<'a> {
     #[inline]
-    pub unsafe fn new_unchecked(slice: NonNull<[u8]>, zeroed: bool) -> Self {
+    pub const unsafe fn new_unchecked(slice: NonNull<[u8]>, zeroed: bool) -> Self {
         Self {
             slice,
             pos: AtomicUsize::new(0),

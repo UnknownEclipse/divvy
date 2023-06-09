@@ -21,4 +21,3 @@ pub use global::{Global, WrapAsGlobal};
 mod leak;
 mod never;
 mod slice;
-mod sync_arena;
