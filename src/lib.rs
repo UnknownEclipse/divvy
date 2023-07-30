@@ -18,6 +18,7 @@ mod arena;
 mod global;
 #[cfg(any(feature = "alloc", feature = "std"))]
 pub use global::{Global, WrapAsGlobal};
+mod atomic_ref;
 mod leak;
 mod never;
 mod slice;
