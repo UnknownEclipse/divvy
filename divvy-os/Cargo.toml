@@ -1,8 +1,0 @@
-[package]
-name = "divvy-os"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-divvy-core = { path = "../divvy-core" }
-libc = "0.2.147"
