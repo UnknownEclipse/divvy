@@ -117,6 +117,7 @@ pub unsafe trait Allocator: Deallocator {
     fn allocate(&self, layout: NonZeroLayout) -> Result<NonNull<u8>, AllocError>;
 
     /// Allocate a new block of zeroed memory that fits the provided layout.
+    #[inline]
     fn allocate_zeroed(&self, layout: NonZeroLayout) -> Result<NonNull<u8>, AllocError> {
         let ptr = self.allocate(layout)?;
         unsafe { ptr.as_ptr().write_bytes(0, layout.size()) };
@@ -225,6 +226,7 @@ pub unsafe trait Allocator: Deallocator {
     /// `allocate`.
     /// - The old layout must be identical to that used when allocating the pointer
     /// - The new layout must have a size and alignment such that new_size >= old_size.
+    #[inline]
     unsafe fn try_grow(
         &self,
         ptr: NonNull<u8>,
@@ -244,6 +246,7 @@ pub unsafe trait Allocator: Deallocator {
     /// `allocate`.
     /// - The old layout must be identical to that used when allocating the pointer
     /// - The new layout must have a size and alignment such that new_size >= old_size.
+    #[inline]
     unsafe fn try_grow_zeroed(
         &self,
         ptr: NonNull<u8>,
@@ -265,10 +268,12 @@ impl<'a, A> Deallocator for &'a A
 where
     A: Deallocator + ?Sized,
 {
+    #[inline]
     unsafe fn deallocate(&self, ptr: NonNull<u8>, layout: NonZeroLayout) {
         unsafe { (**self).deallocate(ptr, layout) }
     }
 
+    #[inline]
     unsafe fn try_shrink(
         &self,
         ptr: NonNull<u8>,
@@ -283,14 +288,17 @@ unsafe impl<'a, A> Allocator for &'a A
 where
     A: Allocator + ?Sized,
 {
+    #[inline]
     fn allocate(&self, layout: NonZeroLayout) -> Result<NonNull<u8>, AllocError> {
         (**self).allocate(layout)
     }
 
+    #[inline]
     fn allocate_zeroed(&self, layout: NonZeroLayout) -> Result<NonNull<u8>, AllocError> {
         (**self).allocate_zeroed(layout)
     }
 
+    #[inline]
     unsafe fn grow(
         &self,
         ptr: NonNull<u8>,
@@ -300,6 +308,7 @@ where
         unsafe { (**self).grow(ptr, old_layout, new_layout) }
     }
 
+    #[inline]
     unsafe fn grow_zeroed(
         &self,
         ptr: NonNull<u8>,
@@ -309,6 +318,7 @@ where
         unsafe { (**self).grow_zeroed(ptr, old_layout, new_layout) }
     }
 
+    #[inline]
     unsafe fn shrink(
         &self,
         ptr: NonNull<u8>,
@@ -318,6 +328,7 @@ where
         unsafe { (**self).shrink(ptr, old_layout, new_layout) }
     }
 
+    #[inline]
     unsafe fn try_grow(
         &self,
         ptr: NonNull<u8>,
@@ -327,6 +338,7 @@ where
         unsafe { (**self).try_grow(ptr, old_layout, new_layout) }
     }
 
+    #[inline]
     unsafe fn try_grow_zeroed(
         &self,
         ptr: NonNull<u8>,
