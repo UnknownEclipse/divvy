@@ -6,7 +6,7 @@ extern crate alloc;
 pub use divvy_core::*;
 
 #[cfg(feature = "alloc")]
-pub use crate::global::Global;
+pub use crate::global::{Global, WrapAsGlobal};
 pub use crate::{fixed_slice::FixedSlice, never::Never};
 
 mod fixed_slice;
