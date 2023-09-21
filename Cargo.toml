@@ -6,5 +6,9 @@ edition = "2021"
 [dependencies]
 divvy-core = { version = "0.1.0", path = "divvy-core" }
 
+[features]
+alloc = []
+std = ["alloc", "divvy-core/std"]
+
 [workspace]
 members = ["divvy-core"]
