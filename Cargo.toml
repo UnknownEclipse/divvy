@@ -3,33 +3,13 @@ name = "divvy"
 version = "0.1.0"
 edition = "2021"
 
-[workspace]
-# members = ["divvy-core", "divvy-cpp", "divvy-tracing", "divvy-alloc"]
-members = ["divvy-core"]
-
 [dependencies]
 divvy-core = { version = "0.1.0", path = "divvy-core" }
-libc = { version = "0.2", optional = true }
-# log = "0.4.17"
-# wyrand = "0.1.1"
-# bumpalo = "3.12.2"
-cfg-if = "1.0.0"
-# windows-sys = { version = "0.48.0", features = [
-#     "Win32_System_Memory",
-#     "Win32_Foundation",
-# ] }
-# divvy-cpp = { path = "divvy-cpp" }
 
 [features]
 default = ["std"]
-# nightly = []
-alloc = []
-std = ["libc", "alloc"]
+alloc = ["divvy-core/alloc"]
+std = ["alloc", "divvy-core/std"]
 
-# [dev-dependencies]
-# criterion = "0.4.0"
-# rand = "0.8.5"
-
-# [[bench]]
-# name = "arena"
-# harness = false
+[workspace]
+members = ["divvy-core"]

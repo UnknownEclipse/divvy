@@ -1,23 +1,20 @@
-#![allow(clippy::missing_safety_doc)]
-#![cfg_attr(feature = "nightly", feature(allocator_api))]
-#![cfg_attr(not(feature = "std"), no_std)]
+#![no_std]
 
-#[cfg(any(feature = "alloc", feature = "std"))]
+#[cfg(feature = "alloc")]
 extern crate alloc;
 
 pub use divvy_core::*;
 
-pub use crate::{
-    arena::Arena,
-    leak::Leak,
-    slice::{Slice, SyncSlice},
-};
+#[cfg(feature = "alloc")]
+pub use crate::global::{Global, WrapAsGlobal};
+pub use crate::{fixed_slice::FixedSlice, never::Never};
 
-mod arena;
-#[cfg(any(feature = "alloc", feature = "std"))]
+mod fixed_slice;
+#[cfg(feature = "alloc")]
 mod global;
-#[cfg(any(feature = "alloc", feature = "std"))]
-pub use global::{Global, WrapAsGlobal};
-mod leak;
 mod never;
-mod slice;
+
+#[inline]
+unsafe fn sub_ptr<T>(left: *const T, right: *const T) -> usize {
+    (left as usize) - (right as usize)
+}
