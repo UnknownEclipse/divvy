@@ -59,10 +59,12 @@ impl<'a> FixedSlice<'a> {
 }
 
 impl<'a> Deallocator for FixedSlice<'a> {
+    #[inline]
     unsafe fn deallocate(&self, _ptr: NonNull<u8>, _layout: divvy_core::NonZeroLayout) {}
 }
 
 unsafe impl<'a> Allocator for FixedSlice<'a> {
+    #[inline]
     fn allocate(&self, layout: NonZeroLayout) -> Result<NonNull<u8>, AllocError> {
         let bump_result =
             unsafe { bump_alloc_impl(self.data, self.pos.get(), layout).ok_or(AllocError)? };
