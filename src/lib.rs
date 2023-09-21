@@ -1,10 +1,16 @@
 #![no_std]
 
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
 pub use divvy_core::*;
 
-pub use crate::{fixed_slice::FixedSlice, global::Global, never::Never};
+#[cfg(feature = "alloc")]
+pub use crate::global::Global;
+pub use crate::{fixed_slice::FixedSlice, never::Never};
 
 mod fixed_slice;
+#[cfg(feature = "alloc")]
 mod global;
 mod never;
 
