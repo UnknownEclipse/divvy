@@ -85,7 +85,7 @@ unsafe fn bump_alloc_impl(
     layout: NonZeroLayout,
 ) -> Option<BumpResult> {
     let pos = pos.as_ptr();
-    let offset = (pos as usize) - (arena.as_ptr() as *mut u8 as usize);
+    let offset = unsafe { sub_ptr(pos, arena.as_ptr().cast()) };
     let align_offset = pos.align_offset(layout.align());
 
     let end_offset = offset
