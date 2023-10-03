@@ -10,6 +10,7 @@ divvy-core = { version = "0.1.0", path = "divvy-core" }
 default = ["std"]
 alloc = []
 std = ["alloc", "divvy-core/std"]
+nightly = []
 
 [workspace]
-members = ["divvy-core"]
+members = ["divvy-core", "divvy-collections"]
