@@ -9,7 +9,7 @@ divvy-core = { version = "0.1.0", path = "divvy-core" }
 [features]
 default = ["std"]
 alloc = []
-std = ["alloc", "divvy-core/std"]
+std = ["alloc"]
 nightly = []
 
 [workspace]
