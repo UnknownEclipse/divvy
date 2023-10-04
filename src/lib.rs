@@ -1,13 +1,20 @@
-#![cfg_attr(not(feature = "std"), no_std)]
-#![feature(alloc_layout_extra, allocator_api, sync_unsafe_cell)]
+#![no_std]
 
+#[cfg(feature = "alloc")]
 extern crate alloc;
 
-pub use crate::{never::Never, os::Os, wrap_as_global::WrapAsGlobal};
+pub use divvy_core::*;
 
-pub mod arena;
+#[cfg(feature = "alloc")]
+pub use crate::global::{Global, WrapAsGlobal};
+pub use crate::{fixed_slice::FixedSlice, never::Never};
+
+mod fixed_slice;
+#[cfg(feature = "alloc")]
+mod global;
 mod never;
-#[cfg(feature = "std")]
-mod os;
-mod slab;
-mod wrap_as_global;
+
+#[inline]
+unsafe fn sub_ptr<T>(left: *const T, right: *const T) -> usize {
+    (left as usize) - (right as usize)
+}
